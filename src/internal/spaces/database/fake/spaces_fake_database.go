@@ -49,7 +49,7 @@ func (db *DB) Create(s *spaces.Space) error {
 	defer db.Mu.Unlock()
 
 	for _, item := range db.Items {
-		if item.ID == item.ID || item.Slug == item.Slug {
+		if item.ID == s.ID || item.Slug == s.Slug {
 			return spaces.ErrSpaceAlreadyExists
 		}
 	}
