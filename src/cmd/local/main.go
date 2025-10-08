@@ -1,6 +1,7 @@
 package main
 
 import (
+	"database/sql"
 	"fmt"
 	"log/slog"
 	"net/http"
@@ -12,6 +13,7 @@ import (
 	"github.com/OliverSchlueter/goutils/sloki"
 	"github.com/fancyinnovations/fancyspaces/src/internal/app"
 	"github.com/justinas/alice"
+	_ "github.com/mattn/go-sqlite3"
 )
 
 func main() {
@@ -25,12 +27,16 @@ func main() {
 	})
 	slog.SetDefault(slog.New(logService))
 
+	// Connect to databases
+	slDB := ConnectSqliteE2E("fancyspaces_e2e.db")
+
 	// Setup HTTP server
 	mux := http.NewServeMux()
 	port := "8080"
 
 	app.Start(app.Configuration{
-		Mux: mux,
+		Mux:    mux,
+		SQLite: slDB,
 	})
 
 	go func() {
@@ -57,4 +63,28 @@ func main() {
 
 		slog.Info("Shutdown complete")
 	}
+}
+
+func ConnectSqliteE2E(path string) *sql.DB {
+	db, err := sql.Open("sqlite3", path)
+	if err != nil {
+		slog.Error("Failed to open sqlite database", sloki.WrapError(err))
+		os.Exit(1)
+	}
+
+	if err := db.Ping(); err != nil {
+		slog.Error("Failed to ping sqlite database", sloki.WrapError(err))
+		os.Exit(1)
+	}
+
+	slog.Info("Connected to sqlite database")
+	return db
+}
+
+func DisconnectSqlite(db *sql.DB) {
+	if err := db.Close(); err != nil {
+		slog.Error("Failed to close sqlite database", sloki.WrapError(err))
+	}
+
+	slog.Info("Disconnected from sqlite database")
 }
