@@ -60,7 +60,6 @@ func (s *Space) Validate() error {
 	if len(s.Title) > 100 {
 		return ErrTitleTooLong
 	}
-
 	if len(s.Title) < 3 {
 		return ErrTitleTooShort
 	}
