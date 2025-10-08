@@ -11,7 +11,7 @@ import (
 type DB interface {
 	GetByID(id string) (*Space, error)
 	GetBySlug(slug string) (*Space, error)
-	Create(s *Space) (*Space, error)
+	Create(s *Space) error
 	Update(id string, s *Space) error
 	Delete(id string) error
 }
@@ -63,17 +63,35 @@ func (s *Store) Create(creator *auth.User, req *CreateOrUpdateSpaceReq) (*Space,
 		},
 	}
 
+	// check if slug is already taken by another space
+	if space.Slug != req.Slug {
+		if _, err := s.db.GetBySlug(req.Slug); err != nil {
+			return nil, ErrSpaceAlreadyExists
+		}
+	}
+
 	if err := space.Validate(); err != nil {
 		return nil, fmt.Errorf("invalid space: %w", err)
 	}
 
-	return s.db.Create(space)
+	if err := s.db.Create(space); err != nil {
+		return nil, err
+	}
+
+	return space, nil
 }
 
 func (s *Store) Update(id string, req *CreateOrUpdateSpaceReq) error {
 	space, err := s.db.GetByID(id)
 	if err != nil {
 		return err
+	}
+
+	// check if slug is already taken by another space
+	if space.Slug != req.Slug {
+		if _, err := s.db.GetBySlug(req.Slug); err != nil {
+			return ErrSpaceAlreadyExists
+		}
 	}
 
 	space.Slug = req.Slug
