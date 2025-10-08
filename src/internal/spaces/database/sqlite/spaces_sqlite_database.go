@@ -231,7 +231,7 @@ func (db *DB) Delete(id string) error {
 }
 
 func (db *DB) fetchMembersForSpace(id string) ([]spaces.Member, error) {
-	query := `SELECT user_id, role FROM members WHERE space_id = ?`
+	query := `SELECT user_id, role FROM space_members WHERE space_id = ?`
 	rows, err := db.conn.Query(query, id)
 	if err != nil {
 		return nil, fmt.Errorf("failed to query members: %w", err)
@@ -256,7 +256,7 @@ func (db *DB) fetchMembersForSpace(id string) ([]spaces.Member, error) {
 }
 
 func (db *DB) fetchCategoriesForSpace(id string) ([]spaces.Category, error) {
-	query := `SELECT category FROM categories WHERE space_id = ?`
+	query := `SELECT category FROM space_categories WHERE space_id = ?`
 	rows, err := db.conn.Query(query, id)
 	if err != nil {
 		return nil, fmt.Errorf("failed to query categories: %w", err)

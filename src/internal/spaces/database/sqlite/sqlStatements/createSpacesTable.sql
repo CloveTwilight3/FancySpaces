@@ -1,4 +1,4 @@
-CREATE TABLE spaces (
+CREATE TABLE IF NOT EXISTS spaces (
     id TEXT PRIMARY KEY,
     slug TEXT UNIQUE NOT NULL,
     title TEXT NOT NULL,
