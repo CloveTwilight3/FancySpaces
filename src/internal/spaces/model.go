@@ -1,6 +1,10 @@
 package spaces
 
-import "time"
+import (
+	"time"
+
+	"github.com/fancyinnovations/fancyspaces/src/internal/auth"
+)
 
 type Space struct {
 	ID          string     `json:"id"`
@@ -48,6 +52,26 @@ const (
 	CategoryMobileApp       Category = "mobile_app"
 	CategoryOther           Category = "other"
 )
+
+func (s *Space) HasFullAccess(u *auth.User) bool {
+	for _, m := range s.Members {
+		if m.UserID == u.ID {
+			return m.Role == RoleOwner || m.Role == RoleAdmin
+		}
+	}
+
+	return false
+}
+
+func (s *Space) HasWriteAccess(u *auth.User) bool {
+	for _, m := range s.Members {
+		if m.UserID == u.ID {
+			return m.Role == RoleOwner || m.Role == RoleAdmin || m.Role == RoleMember
+		}
+	}
+
+	return false
+}
 
 func (s *Space) Validate() error {
 	if len(s.Slug) < 3 {
