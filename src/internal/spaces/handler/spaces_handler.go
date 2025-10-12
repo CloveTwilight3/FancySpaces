@@ -177,7 +177,7 @@ func (h *Handler) handleUpdateSpace(w http.ResponseWriter, r *http.Request, s *s
 		return
 	}
 
-	if !s.HasWriteAccess(u) {
+	if !s.HasFullAccess(u) {
 		problems.Forbidden().WriteToHTTP(w)
 		return
 	}
@@ -228,7 +228,7 @@ func (h *Handler) handleDeleteSpace(w http.ResponseWriter, r *http.Request, s *s
 		return
 	}
 
-	if !s.HasFullAccess(u) {
+	if !s.IsOwner(u) {
 		problems.Forbidden().WriteToHTTP(w)
 		return
 	}
