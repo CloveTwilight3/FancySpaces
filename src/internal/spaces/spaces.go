@@ -113,6 +113,14 @@ func (s *Store) Update(id string, req *CreateOrUpdateSpaceReq) error {
 	return s.db.Update(id, space)
 }
 
+func (s *Store) UpdateFull(space *Space) error {
+	if err := space.Validate(); err != nil {
+		return fmt.Errorf("invalid space: %w", err)
+	}
+
+	return s.db.Update(space.ID, space)
+}
+
 func (s *Store) Delete(id string) error {
 	return s.db.Delete(id)
 }
