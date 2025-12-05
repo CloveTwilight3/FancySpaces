@@ -5,6 +5,7 @@ import (
 	"crypto/sha256"
 	"fmt"
 	"net/http"
+	"time"
 )
 
 type DB interface {
@@ -58,10 +59,11 @@ func (s *Store) LogDownloadForVersion(ctx context.Context, spaceID, versionID st
 	userAgent := r.UserAgent()
 
 	vd := VersionDownload{
-		SpaceID:   spaceID,
-		VersionID: versionID,
-		IPHash:    ip,
-		UserAgent: userAgent,
+		SpaceID:      spaceID,
+		VersionID:    versionID,
+		DownloadedAt: time.Now(),
+		IPHash:       ip,
+		UserAgent:    userAgent,
 	}
 
 	return s.db.StoreVersionDownloads(ctx, []VersionDownload{vd}) // TODO: batch inserts

@@ -40,6 +40,7 @@ func New(cfg Configuration) *Store {
 	return &Store{
 		db:          cfg.DB,
 		fileStorage: cfg.FileStorage,
+		analytics:   cfg.Analytics,
 	}
 }
 

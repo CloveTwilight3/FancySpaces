@@ -4,7 +4,6 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
-	"fmt"
 	"log/slog"
 	"net/http"
 	"time"
@@ -14,7 +13,6 @@ import (
 	"github.com/fancyinnovations/fancyspaces/src/internal/auth"
 	"github.com/fancyinnovations/fancyspaces/src/internal/spaces"
 	"github.com/fancyinnovations/fancyspaces/src/internal/versions"
-	"github.com/google/uuid"
 )
 
 type Handler struct {
@@ -171,7 +169,6 @@ func (h *Handler) handleGetVersion(w http.ResponseWriter, r *http.Request, space
 
 func (h *Handler) handleCreateVersion(w http.ResponseWriter, r *http.Request, spaceID string) {
 	u := h.userFromCtx(r.Context())
-	fmt.Printf("user %#v\n", u)
 	if u == nil || !u.Verified || !u.IsActive {
 		problems.Unauthorized().WriteToHTTP(w)
 		return
@@ -202,15 +199,14 @@ func (h *Handler) handleCreateVersion(w http.ResponseWriter, r *http.Request, sp
 	}
 
 	ver := versions.Version{
-		SpaceID:                   req.SpaceID,
-		ID:                        uuid.New().String(),
+		SpaceID:                   spaceID,
+		ID:                        req.Name,
 		Name:                      req.Name,
 		Channel:                   req.Channel,
 		PublishedAt:               time.Now(),
 		Changelog:                 req.Changelog,
 		SupportedPlatformVersions: req.SupportedPlatformVersions,
 		Files:                     []versions.VersionFile{},
-		Downloads:                 0,
 	}
 
 	if err := h.store.Create(r.Context(), &ver); err != nil {
