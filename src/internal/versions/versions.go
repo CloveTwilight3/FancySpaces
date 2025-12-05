@@ -3,6 +3,9 @@ package versions
 import (
 	"context"
 	"errors"
+	"net/http"
+
+	"github.com/fancyinnovations/fancyspaces/src/internal/analytics"
 )
 
 type DB interface {
@@ -13,7 +16,6 @@ type DB interface {
 	Create(ctx context.Context, v *Version) error
 	Update(ctx context.Context, spaceID, versionID string, v *Version) error
 	Delete(ctx context.Context, spaceID, versionID string) error
-	LogDownload(ctx context.Context, spaceID, versionID string) error
 }
 
 type FileStorage interface {
@@ -25,11 +27,13 @@ type FileStorage interface {
 type Store struct {
 	db          DB
 	fileStorage FileStorage
+	analytics   *analytics.Store
 }
 
 type Configuration struct {
 	DB          DB
 	FileStorage FileStorage
+	Analytics   *analytics.Store
 }
 
 func New(cfg Configuration) *Store {
@@ -101,7 +105,7 @@ func (s *Store) UploadVersionFile(ctx context.Context, version *Version, fileNam
 	return s.fileStorage.Upload(ctx, version, verFile, data)
 }
 
-func (s *Store) DownloadVersionFile(ctx context.Context, spaceID, versionID, fileName string) ([]byte, error) {
+func (s *Store) DownloadVersionFile(ctx context.Context, r *http.Request, spaceID, versionID, fileName string) ([]byte, error) {
 	ver, err := s.Get(ctx, spaceID, versionID)
 	if err != nil {
 		return nil, err
@@ -119,7 +123,7 @@ func (s *Store) DownloadVersionFile(ctx context.Context, spaceID, versionID, fil
 		return nil, ErrVersionNotFound
 	}
 
-	if err := s.db.LogDownload(ctx, spaceID, versionID); err != nil {
+	if err := s.analytics.LogDownloadForVersion(ctx, spaceID, versionID, r); err != nil {
 		return nil, err
 	}
 

@@ -1,11 +1,15 @@
 package app
 
 import (
+	"context"
 	"fmt"
 	"net/http"
 	"time"
 
 	"github.com/ClickHouse/clickhouse-go/v2/lib/driver"
+	"github.com/fancyinnovations/fancyspaces/src/internal/analytics"
+	analyticsCache "github.com/fancyinnovations/fancyspaces/src/internal/analytics/cache"
+	analyticsDatabase "github.com/fancyinnovations/fancyspaces/src/internal/analytics/database/clickhouse"
 	"github.com/fancyinnovations/fancyspaces/src/internal/auth"
 	"github.com/fancyinnovations/fancyspaces/src/internal/spaces"
 	fakeSpacesDB "github.com/fancyinnovations/fancyspaces/src/internal/spaces/database/fake"
@@ -26,6 +30,19 @@ type Configuration struct {
 }
 
 func Start(cfg Configuration) {
+	// Analytics
+	aDB := analyticsDatabase.NewDB(&analyticsDatabase.Configuration{
+		CH: cfg.ClickHouse,
+	})
+	if err := aDB.Setup(context.Background()); err != nil {
+		panic(fmt.Errorf("could not setup analytics database: %w", err))
+	}
+	ac := analyticsCache.NewCache()
+	as := analytics.New(analytics.Configuration{
+		DB:    aDB,
+		Cache: ac,
+	})
+
 	// Spaces
 	spacesStore := spaces.New(spaces.Configuration{
 		DB: seedSpacesDB(),
@@ -44,6 +61,7 @@ func Start(cfg Configuration) {
 	versionsStore := versions.New(versions.Configuration{
 		DB:          versionsDB,
 		FileStorage: versionFileStorage,
+		Analytics:   as,
 	})
 	vh := versionsHandler.New(versionsHandler.Configuration{
 		Store:       versionsStore,

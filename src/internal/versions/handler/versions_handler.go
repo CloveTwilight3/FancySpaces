@@ -322,7 +322,7 @@ func (h *Handler) handleDownloadVersionFile(w http.ResponseWriter, r *http.Reque
 		versionID = ver.ID
 	}
 
-	data, err := h.store.DownloadVersionFile(r.Context(), spaceID, versionID, fileName)
+	data, err := h.store.DownloadVersionFile(r.Context(), r, spaceID, versionID, fileName)
 	if err != nil {
 		slog.Error("Failed to download version file", sloki.WrapError(err))
 		problems.InternalServerError("").WriteToHTTP(w)

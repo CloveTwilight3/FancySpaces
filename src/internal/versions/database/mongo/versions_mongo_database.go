@@ -147,18 +147,3 @@ func (db *DB) Delete(ctx context.Context, spaceID, versionID string) error {
 
 	return nil
 }
-
-func (db *DB) LogDownload(ctx context.Context, spaceID, versionID string) error {
-	filter := bson.D{{"space_id", spaceID}, {"id", versionID}}
-	update := bson.D{{"$inc", bson.D{{"downloads", 1}}}}
-
-	res, err := db.coll.UpdateOne(ctx, filter, update)
-	if err != nil {
-		return fmt.Errorf("could not log download: %w", err)
-	}
-	if res.MatchedCount == 0 {
-		return versions.ErrVersionNotFound
-	}
-
-	return nil
-}
