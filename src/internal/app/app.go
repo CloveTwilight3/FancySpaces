@@ -79,15 +79,15 @@ func Start(cfg Configuration) {
 func seedSpacesDB() *fakeSpacesDB.DB {
 	db := fakeSpacesDB.New()
 
-	fancynpcsSpace := &spaces.Space{
-		ID:          "fn",
-		Slug:        "fancynpcs",
-		Title:       "FancyNpcs",
-		Description: "Simple, lightweight and feature-rich NPC plugin for Paper and Folia servers using packets.",
-		Categories:  []spaces.Category{spaces.CategoryMinecraftPlugin},
+	fancycore := &spaces.Space{
+		ID:          "fc",
+		Slug:        "fancycore",
+		Title:       "FancyCore",
+		Description: "Essential features every Hytale server needs.",
+		Categories:  []spaces.Category{spaces.CategoryHytalePlugin},
 		IconURL:     "",
 		Status:      spaces.StatusApproved,
-		CreatedAt:   time.Date(2025, 12, 3, 20, 0, 0, 0, time.UTC),
+		CreatedAt:   time.Date(2025, 12, 5, 20, 0, 0, 0, time.UTC),
 		Members: []spaces.Member{
 			{
 				UserID: "admin-1",
@@ -95,7 +95,31 @@ func seedSpacesDB() *fakeSpacesDB.DB {
 			},
 		},
 	}
-	if err := db.Create(fancynpcsSpace); err != nil {
+	if err := db.Create(fancycore); err != nil {
+		panic(fmt.Errorf("could not seed spaces db: %w", err))
+	}
+
+	fancyanalytics := &spaces.Space{
+		ID:          "fa",
+		Slug:        "fancyanalytics",
+		Title:       "FancyAnalytics",
+		Description: "Powerful analytics for everyone.",
+		Categories: []spaces.Category{
+			spaces.CategoryWebApp,
+			spaces.CategoryMinecraftPlugin,
+			spaces.CategoryHytalePlugin,
+		},
+		IconURL:   "",
+		Status:    spaces.StatusApproved,
+		CreatedAt: time.Date(2025, 12, 5, 20, 0, 0, 0, time.UTC),
+		Members: []spaces.Member{
+			{
+				UserID: "admin-1",
+				Role:   spaces.RoleOwner,
+			},
+		},
+	}
+	if err := db.Create(fancyanalytics); err != nil {
 		panic(fmt.Errorf("could not seed spaces db: %w", err))
 	}
 

@@ -48,6 +48,7 @@ const (
 	CategoryMinecraftPlugin Category = "minecraft_plugin"
 	CategoryMinecraftServer Category = "minecraft_server"
 	CategoryMinecraftMod    Category = "minecraft_mod"
+	CategoryHytalePlugin    Category = "hytale_plugin"
 	CategoryWebApp          Category = "web_app"
 	CategoryMobileApp       Category = "mobile_app"
 	CategoryOther           Category = "other"
