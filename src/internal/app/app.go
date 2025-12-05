@@ -16,8 +16,9 @@ import (
 	spacesHandler "github.com/fancyinnovations/fancyspaces/src/internal/spaces/handler"
 	"github.com/fancyinnovations/fancyspaces/src/internal/versions"
 	mongoVersionsDB "github.com/fancyinnovations/fancyspaces/src/internal/versions/database/mongo"
-	localVersionFileStorage "github.com/fancyinnovations/fancyspaces/src/internal/versions/filestorage/local"
+	minioVersionFileStorage "github.com/fancyinnovations/fancyspaces/src/internal/versions/filestorage/minio"
 	versionsHandler "github.com/fancyinnovations/fancyspaces/src/internal/versions/handler"
+	"github.com/minio/minio-go/v7"
 	"go.mongodb.org/mongo-driver/v2/mongo"
 )
 
@@ -27,6 +28,7 @@ type Configuration struct {
 	Mux        *http.ServeMux
 	Mongo      *mongo.Database
 	ClickHouse driver.Conn
+	MinIO      *minio.Client
 }
 
 func Start(cfg Configuration) {
@@ -57,7 +59,10 @@ func Start(cfg Configuration) {
 	versionsDB := mongoVersionsDB.NewDB(&mongoVersionsDB.Configuration{
 		Mongo: cfg.Mongo,
 	})
-	versionFileStorage := localVersionFileStorage.New()
+	versionFileStorage := minioVersionFileStorage.NewStorage(cfg.MinIO)
+	if err := versionFileStorage.Setup(context.Background()); err != nil {
+		panic(fmt.Errorf("could not setup version file storage: %w", err))
+	}
 	versionsStore := versions.New(versions.Configuration{
 		DB:          versionsDB,
 		FileStorage: versionFileStorage,

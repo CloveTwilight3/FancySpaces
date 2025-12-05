@@ -31,6 +31,7 @@ func main() {
 	// Connect to databases
 	mc := containers.ConnectToMongoE2E("fancyspaces_e2e")
 	ch := containers.ConnectToClickhouseE2E("fancyspaces_e2e")
+	mio := containers.ConnectToMinIOE2E()
 
 	// Setup HTTP server
 	mux := http.NewServeMux()
@@ -69,6 +70,7 @@ func main() {
 
 		containers.DisconnectMongo(mc)
 		containers.DisconnectClickhouse(ch)
+		containers.DisconnectMinIO(mio)
 
 		slog.Info("Shutdown complete")
 	}

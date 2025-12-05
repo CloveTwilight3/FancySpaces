@@ -22,6 +22,10 @@ const (
 
 	clickhouseUser     = "CLICKHOUSE_USER"
 	clickhousePassword = "CLICKHOUSE_PASSWORD"
+
+	minioUrlEnv       = "MINIO_URL"
+	minioAccessKeyEnv = "MINIO_ACCESS_KEY"
+	minioSecretKeyEnv = "MINIO_SECRET_KEY"
 )
 
 func main() {
@@ -46,6 +50,11 @@ func main() {
 		"fancyspaces",
 		"1.0.0",
 	)
+	mio := containers.ConnectToMinIO(
+		env.MustGetStr(minioUrlEnv),
+		env.MustGetStr(minioAccessKeyEnv),
+		env.MustGetStr(minioSecretKeyEnv),
+	)
 
 	// Setup HTTP server
 	mux := http.NewServeMux()
@@ -55,6 +64,7 @@ func main() {
 		Mux:        mux,
 		Mongo:      mc,
 		ClickHouse: ch,
+		MinIO:      mio,
 	})
 
 	auth.ApiKey = env.MustGetStr("API_KEY")
@@ -84,6 +94,7 @@ func main() {
 
 		containers.DisconnectMongo(mc)
 		containers.DisconnectClickhouse(ch)
+		containers.DisconnectMinIO(mio)
 
 		slog.Info("Shutdown complete")
 	}
