@@ -8,6 +8,7 @@ import (
 	"github.com/fancyinnovations/fancyspaces/src/internal/versions"
 	"go.mongodb.org/mongo-driver/v2/bson"
 	"go.mongodb.org/mongo-driver/v2/mongo"
+	"go.mongodb.org/mongo-driver/v2/mongo/options"
 )
 
 type DB struct {
@@ -79,6 +80,26 @@ func (db *DB) GetByName(ctx context.Context, spaceID, versionNumber string) (*ve
 			return nil, versions.ErrVersionNotFound
 		}
 		return nil, fmt.Errorf("could not find version by name: %w", res.Err())
+	}
+
+	var v versions.Version
+	if err := res.Decode(&v); err != nil {
+		return nil, fmt.Errorf("could not decode version: %w", err)
+	}
+
+	return &v, nil
+}
+
+func (db *DB) GetLatest(ctx context.Context, spaceID, channel string) (*versions.Version, error) {
+	filter := bson.D{{"space_id", spaceID}, {"channel", channel}}
+	opts := options.FindOne().SetSort(bson.D{{"created_at", -1}})
+
+	res := db.coll.FindOne(ctx, filter, opts)
+	if res.Err() != nil {
+		if errors.Is(res.Err(), mongo.ErrNoDocuments) {
+			return nil, versions.ErrVersionNotFound
+		}
+		return nil, fmt.Errorf("could not find latest version: %w", res.Err())
 	}
 
 	var v versions.Version

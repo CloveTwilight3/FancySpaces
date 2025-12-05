@@ -138,6 +138,25 @@ func (h *Handler) handleGetVersion(w http.ResponseWriter, r *http.Request, space
 		return
 	}
 
+	if versionID == "latest" {
+		channel := r.URL.Query().Get("channel")
+		if channel == "" {
+			channel = "release"
+		}
+
+		ver, err := h.store.GetLatest(r.Context(), spaceID, channel)
+		if err != nil {
+			slog.Error("Failed to get latest version", sloki.WrapError(err))
+			problems.InternalServerError("").WriteToHTTP(w)
+			return
+		}
+
+		w.Header().Set("Content-Type", "application/json")
+		w.Header().Set("Cache-Control", "60") // 1 minute
+		json.NewEncoder(w).Encode(ver)
+		return
+	}
+
 	ver, err := h.store.Get(r.Context(), spaceID, versionID)
 	if err != nil {
 		slog.Error("Failed to get version", sloki.WrapError(err))
@@ -288,6 +307,21 @@ func (h *Handler) handleUploadVersionFile(w http.ResponseWriter, r *http.Request
 
 // no auth required
 func (h *Handler) handleDownloadVersionFile(w http.ResponseWriter, r *http.Request, spaceID, versionID, fileName string) {
+	if versionID == "latest" {
+		channel := r.URL.Query().Get("channel")
+		if channel == "" {
+			channel = "release"
+		}
+
+		ver, err := h.store.GetLatest(r.Context(), spaceID, channel)
+		if err != nil {
+			slog.Error("Failed to get latest version", sloki.WrapError(err))
+			problems.InternalServerError("").WriteToHTTP(w)
+			return
+		}
+		versionID = ver.ID
+	}
+
 	data, err := h.store.DownloadVersionFile(r.Context(), spaceID, versionID, fileName)
 	if err != nil {
 		slog.Error("Failed to download version file", sloki.WrapError(err))

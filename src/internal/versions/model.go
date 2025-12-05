@@ -6,7 +6,7 @@ type Version struct {
 	SpaceID                   string        `json:"space_id" bson:"space_id"`
 	ID                        string        `json:"id" bson:"id"`
 	Name                      string        `json:"name" bson:"name"`
-	Channel                   string        `json:"channel" bson:"channel"`
+	Channel                   Channel       `json:"channel" bson:"channel"`
 	PublishedAt               time.Time     `json:"published_at" bson:"published_at"`
 	Changelog                 string        `json:"changelog" bson:"changelog"`
 	SupportedPlatformVersions []string      `json:"supported_platform_versions" bson:"supported_platform_versions"`
