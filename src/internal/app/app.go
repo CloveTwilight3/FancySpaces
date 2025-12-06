@@ -16,6 +16,7 @@ import (
 	spacesHandler "github.com/fancyinnovations/fancyspaces/src/internal/spaces/handler"
 	"github.com/fancyinnovations/fancyspaces/src/internal/versions"
 	mongoVersionsDB "github.com/fancyinnovations/fancyspaces/src/internal/versions/database/mongo"
+	memoryVersionFileStorage "github.com/fancyinnovations/fancyspaces/src/internal/versions/filestorage/memory"
 	minioVersionFileStorage "github.com/fancyinnovations/fancyspaces/src/internal/versions/filestorage/minio"
 	versionsHandler "github.com/fancyinnovations/fancyspaces/src/internal/versions/handler"
 	"github.com/minio/minio-go/v7"
@@ -63,9 +64,11 @@ func Start(cfg Configuration) {
 	if err := versionFileStorage.Setup(context.Background()); err != nil {
 		panic(fmt.Errorf("could not setup version file storage: %w", err))
 	}
+	versionFileCache := memoryVersionFileStorage.NewStorage()
 	versionsStore := versions.New(versions.Configuration{
 		DB:          versionsDB,
 		FileStorage: versionFileStorage,
+		FileCache:   versionFileCache,
 		Analytics:   as,
 	})
 	vh := versionsHandler.New(versionsHandler.Configuration{

@@ -27,12 +27,14 @@ type FileStorage interface {
 type Store struct {
 	db          DB
 	fileStorage FileStorage
+	fileCache   FileStorage
 	analytics   *analytics.Store
 }
 
 type Configuration struct {
 	DB          DB
 	FileStorage FileStorage
+	FileCache   FileStorage
 	Analytics   *analytics.Store
 }
 
@@ -40,6 +42,7 @@ func New(cfg Configuration) *Store {
 	return &Store{
 		db:          cfg.DB,
 		fileStorage: cfg.FileStorage,
+		fileCache:   cfg.FileCache,
 		analytics:   cfg.Analytics,
 	}
 }
@@ -86,6 +89,9 @@ func (s *Store) Delete(ctx context.Context, spaceID, versionID string) error {
 		if err := s.fileStorage.Delete(ctx, spaceID, versionID, f.Name); err != nil {
 			return err
 		}
+		if err := s.fileCache.Delete(ctx, spaceID, versionID, f.Name); err != nil {
+			return err
+		}
 	}
 
 	return s.db.Delete(ctx, spaceID, versionID)
@@ -103,7 +109,13 @@ func (s *Store) UploadVersionFile(ctx context.Context, version *Version, fileNam
 		return err
 	}
 
-	return s.fileStorage.Upload(ctx, version, verFile, data)
+	// upload to real storage
+	if err := s.fileStorage.Upload(ctx, version, verFile, data); err != nil {
+		return err
+	}
+
+	// cache file
+	return s.fileCache.Upload(ctx, version, verFile, data)
 }
 
 func (s *Store) DownloadVersionFile(ctx context.Context, r *http.Request, spaceID, versionID, fileName string) ([]byte, error) {
@@ -128,5 +140,21 @@ func (s *Store) DownloadVersionFile(ctx context.Context, r *http.Request, spaceI
 		return nil, err
 	}
 
-	return s.fileStorage.Download(ctx, spaceID, versionID, fileName)
+	// try to get file from cache
+	if data, err := s.fileCache.Download(ctx, spaceID, versionID, fileName); err == nil {
+		return data, nil
+	}
+
+	// get file from real storage
+	data, err := s.fileStorage.Download(ctx, spaceID, versionID, fileName)
+	if err != nil {
+		return nil, err
+	}
+
+	// cache file
+	if err := s.fileCache.Upload(ctx, ver, &VersionFile{Name: fileName}, data); err != nil {
+		return nil, err
+	}
+
+	return data, nil
 }
