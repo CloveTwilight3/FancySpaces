@@ -112,11 +112,6 @@ func (h *Handler) handleVersionFile(w http.ResponseWriter, r *http.Request) {
 
 // no auth required
 func (h *Handler) handleGetVersions(w http.ResponseWriter, r *http.Request, spaceID string) {
-	if r.Header.Get("Accept") != "application/json" {
-		problems.WrongAcceptType("application/json", r.Header.Get("Accept")).WriteToHTTP(w)
-		return
-	}
-
 	all, err := h.store.GetAll(r.Context(), spaceID)
 	if err != nil {
 		slog.Error("Failed to get versions", sloki.WrapError(err))
@@ -131,11 +126,6 @@ func (h *Handler) handleGetVersions(w http.ResponseWriter, r *http.Request, spac
 
 // no auth required
 func (h *Handler) handleGetVersion(w http.ResponseWriter, r *http.Request, spaceID, versionID string) {
-	if r.Header.Get("Accept") != "application/json" {
-		problems.WrongAcceptType("application/json", r.Header.Get("Accept")).WriteToHTTP(w)
-		return
-	}
-
 	if versionID == "latest" {
 		channel := r.URL.Query().Get("channel")
 		if channel == "" {
