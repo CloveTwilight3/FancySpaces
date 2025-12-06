@@ -18,6 +18,8 @@ import (
 )
 
 const (
+	apiKeyEnv = "API_KEY"
+
 	mongodbUrlEnv = "MONGODB_URL"
 
 	clickhouseUser     = "CLICKHOUSE_USER"
@@ -67,7 +69,7 @@ func main() {
 		MinIO:      mio,
 	})
 
-	auth.ApiKey = env.MustGetStr("API_KEY")
+	auth.ApiKey = env.MustGetStr(apiKeyEnv)
 	auth.UserAdmin.Password = auth.Hash(auth.ApiKey)
 
 	go func() {
