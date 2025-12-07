@@ -12,7 +12,7 @@ type DB interface {
 	GetAll(ctx context.Context, spaceID string) ([]Version, error)
 	GetByID(ctx context.Context, spaceID, versionID string) (*Version, error)
 	GetByName(ctx context.Context, spaceID, versionNumber string) (*Version, error)
-	GetLatest(ctx context.Context, spaceID, channel string) (*Version, error)
+	GetLatest(ctx context.Context, spaceID, channel, platform string) (*Version, error)
 	Create(ctx context.Context, v *Version) error
 	Update(ctx context.Context, spaceID, versionID string, v *Version) error
 	Delete(ctx context.Context, spaceID, versionID string) error
@@ -67,8 +67,8 @@ func (s *Store) Get(ctx context.Context, spaceID, id string) (*Version, error) {
 	return v, nil
 }
 
-func (s *Store) GetLatest(ctx context.Context, spaceID, channel string) (*Version, error) {
-	return s.db.GetLatest(ctx, spaceID, channel)
+func (s *Store) GetLatest(ctx context.Context, spaceID, channel, platform string) (*Version, error) {
+	return s.db.GetLatest(ctx, spaceID, channel, platform)
 }
 
 func (s *Store) Create(ctx context.Context, v *Version) error {

@@ -1,8 +1,11 @@
 package handler
 
+import "github.com/fancyinnovations/fancyspaces/src/internal/versions"
+
 type CreateVersionReq struct {
-	Name                      string   `json:"name"`
-	Channel                   string   `json:"channel"`
-	Changelog                 string   `json:"changelog"`
-	SupportedPlatformVersions []string `json:"supported_platform_versions"`
+	Name                      string            `json:"name"`
+	Platform                  versions.Platform `json:"platform"`
+	Channel                   versions.Channel  `json:"channel"`
+	Changelog                 string            `json:"changelog"`
+	SupportedPlatformVersions []string          `json:"supported_platform_versions"`
 }

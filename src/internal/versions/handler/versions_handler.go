@@ -99,11 +99,9 @@ func (h *Handler) handleGetVersions(w http.ResponseWriter, r *http.Request, spac
 func (h *Handler) handleGetVersion(w http.ResponseWriter, r *http.Request, spaceID, versionID string) {
 	if versionID == "latest" {
 		channel := r.URL.Query().Get("channel")
-		if channel == "" {
-			channel = "release"
-		}
+		platform := r.URL.Query().Get("platform")
 
-		ver, err := h.store.GetLatest(r.Context(), spaceID, channel)
+		ver, err := h.store.GetLatest(r.Context(), spaceID, channel, platform)
 		if err != nil {
 			slog.Error("Failed to get latest version", sloki.WrapError(err))
 			problems.InternalServerError("").WriteToHTTP(w)

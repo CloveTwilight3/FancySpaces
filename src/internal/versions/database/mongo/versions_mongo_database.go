@@ -29,8 +29,9 @@ func NewDB(config *Configuration) *DB {
 
 func (db *DB) GetAll(ctx context.Context, spaceID string) ([]versions.Version, error) {
 	filter := bson.D{{"space_id", spaceID}}
+	opts := options.Find().SetSort(bson.D{{"published_at", -1}})
 
-	cur, err := db.coll.Find(ctx, filter)
+	cur, err := db.coll.Find(ctx, filter, opts)
 	if err != nil {
 		return nil, fmt.Errorf("could not find versions: %w", err)
 	}
@@ -90,8 +91,15 @@ func (db *DB) GetByName(ctx context.Context, spaceID, versionNumber string) (*ve
 	return &v, nil
 }
 
-func (db *DB) GetLatest(ctx context.Context, spaceID, channel string) (*versions.Version, error) {
-	filter := bson.D{{"space_id", spaceID}, {"channel", channel}}
+func (db *DB) GetLatest(ctx context.Context, spaceID, channel, platform string) (*versions.Version, error) {
+	filter := bson.D{{"space_id", spaceID}}
+	if channel != "" {
+		filter = append(filter, bson.E{Key: "channel", Value: channel})
+	}
+	if platform != "" {
+		filter = append(filter, bson.E{Key: "platform", Value: platform})
+	}
+
 	opts := options.FindOne().SetSort(bson.D{{"published_at", -1}})
 
 	res := db.coll.FindOne(ctx, filter, opts)
