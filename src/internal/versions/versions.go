@@ -48,7 +48,16 @@ func New(cfg Configuration) *Store {
 }
 
 func (s *Store) GetAll(ctx context.Context, spaceID string) ([]Version, error) {
-	return s.db.GetAll(ctx, spaceID)
+	all, err := s.db.GetAll(ctx, spaceID)
+	if err != nil {
+		return nil, err
+	}
+
+	if all == nil {
+		all = []Version{}
+	}
+
+	return all, nil
 }
 
 func (s *Store) Get(ctx context.Context, spaceID, id string) (*Version, error) {
