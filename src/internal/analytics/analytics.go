@@ -20,19 +20,22 @@ type Cache interface {
 }
 
 type Store struct {
-	db DB
-	c  Cache
+	db    DB
+	c     Cache
+	getIP func(r *http.Request) string
 }
 
 type Configuration struct {
 	DB    DB
 	Cache Cache
+	GetIP func(r *http.Request) string
 }
 
 func New(cfg Configuration) *Store {
 	return &Store{
-		db: cfg.DB,
-		c:  cfg.Cache,
+		db:    cfg.DB,
+		c:     cfg.Cache,
+		getIP: cfg.GetIP,
 	}
 }
 
@@ -52,7 +55,7 @@ func (s *Store) GetDownloadCountForVersion(ctx context.Context, spaceID, version
 }
 
 func (s *Store) LogDownloadForVersion(ctx context.Context, spaceID, versionID string, r *http.Request) error {
-	ip := getIP(r)
+	ip := s.getIP(r)
 	if ip != "unknown" {
 		ip = hashIP(ip)
 	}
@@ -68,20 +71,6 @@ func (s *Store) LogDownloadForVersion(ctx context.Context, spaceID, versionID st
 	}
 
 	return s.db.StoreVersionDownloads(ctx, []VersionDownload{vd}) // TODO: batch inserts
-}
-
-func getIP(r *http.Request) string {
-	ip := "unknown"
-	if r.RemoteAddr != "" {
-		ip = r.RemoteAddr
-	}
-	if xff := r.Header.Get("X-Forwarded-For"); xff != "" {
-		ip = xff
-	}
-	if xri := r.Header.Get("X-Real-IP"); xri != "" {
-		ip = xri
-	}
-	return ip
 }
 
 func hashIP(ip string) string {

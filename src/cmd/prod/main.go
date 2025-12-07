@@ -14,6 +14,8 @@ import (
 	"github.com/OliverSchlueter/goutils/sloki"
 	"github.com/fancyinnovations/fancyspaces/src/internal/app"
 	"github.com/fancyinnovations/fancyspaces/src/internal/auth"
+	"github.com/fancyinnovations/fancyspaces/src/internal/ratelimit"
+	rlDB "github.com/fancyinnovations/fancyspaces/src/internal/ratelimit/database/memory"
 	"github.com/justinas/alice"
 )
 
@@ -73,8 +75,16 @@ func main() {
 	auth.UserAdmin.Password = auth.Hash(auth.ApiKey)
 
 	go func() {
+		rl := ratelimit.NewService(ratelimit.Configuration{
+			DB:              rlDB.NewDB(),
+			TokensPerSecond: 2,
+			MaxTokens:       10,
+			GetIP:           app.GetIP,
+		})
+
 		middleware.OnlyLogStatusAbove = 399 // log 4xx and 5xx status codes
 		chain := alice.New(
+			rl.Middleware,
 			middleware.RequestLogging,
 			auth.Middleware,
 			middleware.Recovery,

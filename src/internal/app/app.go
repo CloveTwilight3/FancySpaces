@@ -44,6 +44,7 @@ func Start(cfg Configuration) {
 	as := analytics.New(analytics.Configuration{
 		DB:    aDB,
 		Cache: ac,
+		GetIP: GetIP,
 	})
 
 	// Spaces
@@ -127,4 +128,18 @@ func seedSpacesDB() *fakeSpacesDB.DB {
 	}
 
 	return db
+}
+
+func GetIP(r *http.Request) string {
+	ip := "unknown"
+	if r.RemoteAddr != "" {
+		ip = r.RemoteAddr
+	}
+	if xff := r.Header.Get("X-Forwarded-For"); xff != "" {
+		ip = xff
+	}
+	if xri := r.Header.Get("X-Real-IP"); xri != "" {
+		ip = xri
+	}
+	return ip
 }
