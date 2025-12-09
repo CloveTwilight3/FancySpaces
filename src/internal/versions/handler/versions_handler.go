@@ -166,6 +166,7 @@ func (h *Handler) handleCreateVersion(w http.ResponseWriter, r *http.Request, sp
 		SpaceID:                   spaceID,
 		ID:                        req.Name,
 		Name:                      req.Name,
+		Platform:                  req.Platform,
 		Channel:                   req.Channel,
 		PublishedAt:               time.Now(),
 		Changelog:                 req.Changelog,
