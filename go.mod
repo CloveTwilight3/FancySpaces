@@ -4,7 +4,7 @@ go 1.25.5
 
 require (
 	github.com/ClickHouse/clickhouse-go/v2 v2.42.0
-	github.com/OliverSchlueter/goutils v0.0.22
+	github.com/OliverSchlueter/goutils v0.0.24
 	github.com/dgraph-io/ristretto/v2 v2.3.0
 	github.com/google/go-cmp v0.7.0
 	github.com/google/uuid v1.6.0

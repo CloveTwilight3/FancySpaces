@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/ClickHouse/clickhouse-go/v2/lib/driver"
+	"github.com/OliverSchlueter/goutils/ratelimit"
 	"github.com/fancyinnovations/fancyspaces/src/internal/analytics"
 	analyticsCache "github.com/fancyinnovations/fancyspaces/src/internal/analytics/cache"
 	analyticsDatabase "github.com/fancyinnovations/fancyspaces/src/internal/analytics/database/clickhouse"
@@ -44,7 +45,7 @@ func Start(cfg Configuration) {
 	as := analytics.New(analytics.Configuration{
 		DB:    aDB,
 		Cache: ac,
-		GetIP: GetIP,
+		GetIP: ratelimit.GetIP,
 	})
 
 	// Spaces
@@ -128,18 +129,4 @@ func seedSpacesDB() *fakeSpacesDB.DB {
 	}
 
 	return db
-}
-
-func GetIP(r *http.Request) string {
-	ip := "unknown"
-	if r.RemoteAddr != "" {
-		ip = r.RemoteAddr
-	}
-	if xff := r.Header.Get("X-Forwarded-For"); xff != "" {
-		ip = xff
-	}
-	if xri := r.Header.Get("X-Real-IP"); xri != "" {
-		ip = xri
-	}
-	return ip
 }

@@ -6,6 +6,7 @@ import (
 	"net/http"
 
 	"github.com/OliverSchlueter/goutils/problems"
+	"github.com/OliverSchlueter/goutils/ratelimit"
 	"github.com/OliverSchlueter/goutils/sloki"
 	"github.com/fancyinnovations/fancyspaces/src/internal/spaces"
 	"github.com/fancyinnovations/fancyspaces/src/internal/versions"
@@ -95,6 +96,11 @@ func (h *Handler) handleUploadVersionFile(w http.ResponseWriter, r *http.Request
 
 // no auth required
 func (h *Handler) handleDownloadVersionFile(w http.ResponseWriter, r *http.Request, spaceID, versionID, fileName string) {
+	if err := h.downloadRatelimit.CheckRequest(r, "*"); err != nil {
+		ratelimit.RateLimitExceededProblem().WriteToHTTP(w)
+		return
+	}
+
 	if versionID == "latest" {
 		channel := r.URL.Query().Get("channel")
 		platform := r.URL.Query().Get("platform")

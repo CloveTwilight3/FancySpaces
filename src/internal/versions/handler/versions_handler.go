@@ -10,6 +10,7 @@ import (
 
 	"github.com/OliverSchlueter/goutils/idgen"
 	"github.com/OliverSchlueter/goutils/problems"
+	"github.com/OliverSchlueter/goutils/ratelimit"
 	"github.com/OliverSchlueter/goutils/sloki"
 	"github.com/fancyinnovations/fancyspaces/src/internal/auth"
 	"github.com/fancyinnovations/fancyspaces/src/internal/spaces"
@@ -17,9 +18,10 @@ import (
 )
 
 type Handler struct {
-	store       *versions.Store
-	spaces      *spaces.Store
-	userFromCtx func(ctx context.Context) *auth.User
+	store             *versions.Store
+	spaces            *spaces.Store
+	userFromCtx       func(ctx context.Context) *auth.User
+	downloadRatelimit *ratelimit.Service
 }
 
 type Configuration struct {
@@ -29,10 +31,16 @@ type Configuration struct {
 }
 
 func New(cfg Configuration) *Handler {
+	downloadRatelimit := ratelimit.NewService(ratelimit.Configuration{
+		TokensPerSecond: 1,
+		MaxTokens:       5,
+	})
+
 	return &Handler{
-		store:       cfg.Store,
-		spaces:      cfg.Spaces,
-		userFromCtx: cfg.UserFromCtx,
+		store:             cfg.Store,
+		spaces:            cfg.Spaces,
+		userFromCtx:       cfg.UserFromCtx,
+		downloadRatelimit: downloadRatelimit,
 	}
 }
 
