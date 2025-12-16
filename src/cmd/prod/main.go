@@ -12,7 +12,6 @@ import (
 	"github.com/OliverSchlueter/goutils/env"
 	"github.com/OliverSchlueter/goutils/middleware"
 	"github.com/OliverSchlueter/goutils/ratelimit"
-	rlDB "github.com/OliverSchlueter/goutils/ratelimit/database/memory"
 	"github.com/OliverSchlueter/goutils/sloki"
 	"github.com/fancyinnovations/fancyspaces/src/internal/app"
 	"github.com/fancyinnovations/fancyspaces/src/internal/auth"
@@ -76,10 +75,8 @@ func main() {
 
 	go func() {
 		rl := ratelimit.NewService(ratelimit.Configuration{
-			DB:              rlDB.NewDB(),
-			TokensPerSecond: 5,
+			TokensPerSecond: 3,
 			MaxTokens:       50,
-			GetIP:           ratelimit.GetIP,
 		})
 
 		middleware.OnlyLogStatusAbove = 399 // log 4xx and 5xx status codes
