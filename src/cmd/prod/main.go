@@ -79,7 +79,7 @@ func main() {
 			DB:              rlDB.NewDB(),
 			TokensPerSecond: 5,
 			MaxTokens:       50,
-			GetIP:           app.GetIP,
+			GetIP:           ratelimit.GetIP,
 		})
 
 		middleware.OnlyLogStatusAbove = 399 // log 4xx and 5xx status codes
