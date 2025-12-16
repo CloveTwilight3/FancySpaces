@@ -11,11 +11,11 @@ import (
 	"github.com/OliverSchlueter/goutils/containers"
 	"github.com/OliverSchlueter/goutils/env"
 	"github.com/OliverSchlueter/goutils/middleware"
+	"github.com/OliverSchlueter/goutils/ratelimit"
+	rlDB "github.com/OliverSchlueter/goutils/ratelimit/database/memory"
 	"github.com/OliverSchlueter/goutils/sloki"
 	"github.com/fancyinnovations/fancyspaces/src/internal/app"
 	"github.com/fancyinnovations/fancyspaces/src/internal/auth"
-	"github.com/fancyinnovations/fancyspaces/src/internal/ratelimit"
-	rlDB "github.com/fancyinnovations/fancyspaces/src/internal/ratelimit/database/memory"
 	"github.com/justinas/alice"
 )
 
@@ -77,8 +77,8 @@ func main() {
 	go func() {
 		rl := ratelimit.NewService(ratelimit.Configuration{
 			DB:              rlDB.NewDB(),
-			TokensPerSecond: 2,
-			MaxTokens:       10,
+			TokensPerSecond: 5,
+			MaxTokens:       50,
 			GetIP:           app.GetIP,
 		})
 

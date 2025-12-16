@@ -10,8 +10,8 @@ github.com/ClickHouse/clickhouse-go/v2 v2.42.0 h1:MdujEfIrpXesQUH0k0AnuVtJQXk6RZ
 github.com/ClickHouse/clickhouse-go/v2 v2.42.0/go.mod h1:riWnuo4YMVdajYll0q6FzRBomdyCrXyFY3VXeXczA8s=
 github.com/Microsoft/go-winio v0.6.2 h1:F2VQgta7ecxGYO8k3ZZz3RS8fVIXVxONVUPlNERoyfY=
 github.com/Microsoft/go-winio v0.6.2/go.mod h1:yd8OoFMLzJbo9gZq8j5qaps8bJ9aShtEA8Ipt1oGCvU=
-github.com/OliverSchlueter/goutils v0.0.21 h1:GFfPLTU8L5B32FoT0x7G7QtnEGcTItIqSkEtX8M1zbw=
-github.com/OliverSchlueter/goutils v0.0.21/go.mod h1:Kf8k9AaaATGm6D/IVJkIfVZ4sUTXzHfy/cLQdpejFXE=
+github.com/OliverSchlueter/goutils v0.0.22 h1:bNVlYIUbhRQmFAwL/TMkljx+AwEYK7NJemgKW3UCfOQ=
+github.com/OliverSchlueter/goutils v0.0.22/go.mod h1:Kf8k9AaaATGm6D/IVJkIfVZ4sUTXzHfy/cLQdpejFXE=
 github.com/andybalholm/brotli v1.2.0 h1:ukwgCxwYrmACq68yiUqwIWnGY0cTPox/M94sVwToPjQ=
 github.com/andybalholm/brotli v1.2.0/go.mod h1:rzTDkvFWvIrjDXZHkuS16NPggd91W3kUSvPlQ1pLaKY=
 github.com/bsm/ginkgo/v2 v2.12.0 h1:Ny8MWAHyOepLGlLKYmXG4IEkioBysk6GpaRTLC8zwWs=
