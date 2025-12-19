@@ -36,3 +36,6 @@ docs/_book
 
 test/
 
+java-sdk/build
+java-sdk/.gradle
+
