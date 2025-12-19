@@ -5,6 +5,8 @@ import com.fancyinnovations.fancyspaces.utils.HttpRequest;
 import de.oliver.fancyanalytics.logger.properties.NumberProperty;
 import de.oliver.fancyanalytics.logger.properties.StringProperty;
 import de.oliver.fancyanalytics.logger.properties.ThrowableProperty;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -20,8 +22,16 @@ public class VersionService {
         this.fs = fs;
     }
 
-    public List<Version> getVersions(String spaceID) {
-        HttpRequest req = new HttpRequest(fs.getBaseURL() + "/spaces/" + spaceID + "/versions")
+    public List<Version> getVersions(String spaceID, @Nullable String platform, @Nullable String channel) {
+        String query = "";
+        if (platform != null && !platform.isEmpty()) {
+            query = "?platform="+platform;
+        }
+        if (channel != null && !channel.isEmpty()) {
+            query += query.isEmpty() ? "?channel="+channel : "&channel="+channel;
+        }
+
+        HttpRequest req = new HttpRequest(fs.getBaseURL() + "/spaces/" + spaceID + "/versions"+query)
                 .withHeader("Accept", "application/json")
                 .withHeader("User-Agent", "FancySpaces Java-SDK");
 
@@ -46,6 +56,10 @@ public class VersionService {
             );
             return null;
         }
+    }
+
+    public List<Version> getVersions(String spaceID) {
+        return getVersions(spaceID, null, null);
     }
 
     public Version getVersion(String spaceID, String version) {
@@ -75,8 +89,42 @@ public class VersionService {
         }
     }
 
-    public Version getLatestVersion(String spaceID) {
-        return getVersion(spaceID, "latest");
+    public Version getLatestVersion(@NotNull String spaceID, @Nullable String platform, @Nullable String channel) {
+        String query = "";
+        if (platform != null && !platform.isEmpty()) {
+            query = "?platform="+platform;
+        }
+        if (channel != null && !channel.isEmpty()) {
+            query += query.isEmpty() ? "?channel="+channel : "&channel="+channel;
+        }
+
+        HttpRequest req = new HttpRequest(fs.getBaseURL() + "/spaces/" + spaceID + "/versions/latest"+query)
+                .withHeader("Accept", "application/json")
+                .withHeader("User-Agent", "FancySpaces Java-SDK");
+
+        try {
+            HttpResponse<String> resp = req.send();
+
+            if (resp.statusCode() != 200) {
+                fs.getFancyLogger().error(
+                        "Failed to fetch latest version",
+                        NumberProperty.of("status_code", resp.statusCode()),
+                        StringProperty.of("response_body", resp.body())
+                );
+                return null;
+            }
+
+            return HttpRequest.gson.fromJson(resp.body(), Version.class);
+        } catch (URISyntaxException | IOException | InterruptedException e) {
+            fs.getFancyLogger().error(
+                    "Exception occurred while fetching latest version",
+                    ThrowableProperty.of(e)
+            );
+            return null;
+        }
     }
 
+    public Version getLatestVersion(@NotNull String spaceID) {
+        return getLatestVersion(spaceID, null, null);
+    }
 }
