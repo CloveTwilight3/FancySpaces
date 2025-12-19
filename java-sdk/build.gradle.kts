@@ -16,9 +16,9 @@ allprojects {
 }
 
 dependencies {
-    implementation("de.oliver.FancyAnalytics:logger:0.0.9")
+    compileOnly("de.oliver.FancyAnalytics:logger:0.0.9")
 
-    implementation("com.google.code.gson:gson:2.13.2")
+    compileOnly("com.google.code.gson:gson:2.13.2")
     implementation("org.jetbrains:annotations:26.0.2-1")
 }
 
