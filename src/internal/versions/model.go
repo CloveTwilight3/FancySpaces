@@ -27,6 +27,7 @@ type Platform string
 const (
 	PlatformMinecraftPlugin Platform = "minecraft_plugin"
 	PlatformHytalePlugin    Platform = "hytale_plugin"
+	PlatformExecutable      Platform = "executable"
 )
 
 type Channel string
