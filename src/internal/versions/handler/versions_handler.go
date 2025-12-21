@@ -57,6 +57,25 @@ func (h *Handler) handleVersions(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	space, err := h.spaces.Get(sid)
+	if err != nil {
+		if errors.Is(err, spaces.ErrSpaceNotFound) {
+			problems.NotFound("Space", sid).WriteToHTTP(w)
+			return
+		}
+
+		slog.Error("Failed to get space by id", sloki.WrapError(err))
+		problems.InternalServerError("").WriteToHTTP(w)
+		return
+	}
+	if space.Status != spaces.StatusApproved && space.Status != spaces.StatusArchived {
+		u := h.userFromCtx(r.Context())
+		if u == nil || !u.Verified || !u.IsActive || !space.IsMember(u) {
+			problems.NotFound("Space", space.ID).WriteToHTTP(w)
+			return
+		}
+	}
+
 	switch r.Method {
 	case http.MethodGet:
 		h.handleGetVersions(w, r, sid)
@@ -78,6 +97,25 @@ func (h *Handler) handleVersion(w http.ResponseWriter, r *http.Request) {
 	if vid == "" {
 		problems.ValidationError("version_id", "Version ID or name is required").WriteToHTTP(w)
 		return
+	}
+
+	space, err := h.spaces.Get(sid)
+	if err != nil {
+		if errors.Is(err, spaces.ErrSpaceNotFound) {
+			problems.NotFound("Space", sid).WriteToHTTP(w)
+			return
+		}
+
+		slog.Error("Failed to get space by id", sloki.WrapError(err))
+		problems.InternalServerError("").WriteToHTTP(w)
+		return
+	}
+	if space.Status != spaces.StatusApproved && space.Status != spaces.StatusArchived {
+		u := h.userFromCtx(r.Context())
+		if u == nil || !u.Verified || !u.IsActive || !space.IsMember(u) {
+			problems.NotFound("Space", space.ID).WriteToHTTP(w)
+			return
+		}
 	}
 
 	switch r.Method {

@@ -32,6 +32,25 @@ func (h *Handler) handleVersionFile(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	space, err := h.spaces.Get(sid)
+	if err != nil {
+		if errors.Is(err, spaces.ErrSpaceNotFound) {
+			problems.NotFound("Space", sid).WriteToHTTP(w)
+			return
+		}
+
+		slog.Error("Failed to get space by id", sloki.WrapError(err))
+		problems.InternalServerError("").WriteToHTTP(w)
+		return
+	}
+	if space.Status != spaces.StatusApproved && space.Status != spaces.StatusArchived {
+		u := h.userFromCtx(r.Context())
+		if u == nil || !u.Verified || !u.IsActive || !space.IsMember(u) {
+			problems.NotFound("Space", space.ID).WriteToHTTP(w)
+			return
+		}
+	}
+
 	switch r.Method {
 	case http.MethodGet:
 		h.handleDownloadVersionFile(w, r, sid, vid, fileName)
