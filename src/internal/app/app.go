@@ -206,7 +206,7 @@ func seedSpacesDB() *fakeSpacesDB.DB {
 
 	cityquests := &spaces.Space{
 		ID:          "cq",
-		Slug:        "citquests",
+		Slug:        "cityquests",
 		Title:       "CityQuests",
 		Description: "Quests plugin for Hytale.",
 		Categories:  []spaces.Category{spaces.CategoryHytalePlugin},
