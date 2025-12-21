@@ -17,7 +17,7 @@ FROM ubuntu:22.04
 WORKDIR /root/
 
 # Copy the built binary from the builder stage
-COPY --from=builder ./app/main .
+COPY --from=builder ./app/src/main .
 
 EXPOSE 8080
 
