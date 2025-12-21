@@ -114,7 +114,7 @@ func (h *Handler) handleGetSpaces(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json")
 	w.Header().Set("Cache-Control", "3600") // 1 hour
-	json.NewEncoder(w).Encode(all)
+	json.NewEncoder(w).Encode(res)
 }
 
 // no auth required
