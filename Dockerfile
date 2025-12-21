@@ -8,10 +8,10 @@ WORKDIR /app
 COPY . .
 
 # Download dependencies
-RUN go mod download
+RUN cd src && go mod download
 
 # Build the Go application
-RUN go build -o main ./src/cmd/prod/main.go
+RUN cd src && go build -o main ./cmd/prod/main.go
 
 FROM ubuntu:22.04
 WORKDIR /root/
