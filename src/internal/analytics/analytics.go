@@ -40,7 +40,7 @@ func New(cfg Configuration) *Store {
 }
 
 func (s *Store) GetDownloadCountForSpace(ctx context.Context, spaceID string) (uint64, error) {
-	err, count := s.c.GetDownloadCountForVersion(spaceID, "*")
+	err, count := s.c.GetDownloadCountForVersion(spaceID, AllVersionsID)
 	if err == nil {
 		return count, nil
 	}
@@ -50,7 +50,7 @@ func (s *Store) GetDownloadCountForSpace(ctx context.Context, spaceID string) (u
 		return 0, err
 	}
 
-	s.c.SetDownloadCountForVersion(spaceID, "*", count)
+	s.c.SetDownloadCountForVersion(spaceID, AllVersionsID, count)
 
 	return count, nil
 }
@@ -87,7 +87,23 @@ func (s *Store) LogDownloadForVersion(ctx context.Context, spaceID, versionID st
 		UserAgent:    userAgent,
 	}
 
-	return s.db.StoreVersionDownloads(ctx, []VersionDownload{vd}) // TODO: batch inserts
+	// TODO: batch inserts
+	if err := s.db.StoreVersionDownloads(ctx, []VersionDownload{vd}); err != nil {
+		return err
+	}
+
+	// Update cache
+	err, verDownloads := s.c.GetDownloadCountForVersion(spaceID, versionID)
+	if err == nil {
+		s.c.SetDownloadCountForVersion(spaceID, versionID, verDownloads+1)
+	}
+
+	err, spaceDownloads := s.c.GetDownloadCountForVersion(spaceID, AllVersionsID)
+	if err == nil {
+		s.c.SetDownloadCountForVersion(spaceID, AllVersionsID, spaceDownloads+1)
+	}
+
+	return nil
 }
 
 func hashIP(ip string) string {

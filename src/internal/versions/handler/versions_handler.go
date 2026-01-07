@@ -321,6 +321,6 @@ func (h *Handler) handleVersionDownloads(w http.ResponseWriter, r *http.Request)
 	}
 
 	w.Header().Set("Content-Type", "application/json")
-	w.Header().Set("Cache-Control", "public, 300") // 5 minutes
+	w.Header().Set("Cache-Control", "public, 60") // 1 minute
 	json.NewEncoder(w).Encode(resp)
 }

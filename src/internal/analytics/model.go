@@ -5,6 +5,8 @@ import (
 	"time"
 )
 
+const AllVersionsID = "*"
+
 type VersionDownload struct {
 	SpaceID      string    `json:"space_id" ch:"space_id"`
 	VersionID    string    `json:"version_id" ch:"version_id"`
@@ -14,5 +16,5 @@ type VersionDownload struct {
 }
 
 var (
-	NotInCacheErr = errors.New("not in cache")
+	ErrNotInCache = errors.New("not in cache")
 )

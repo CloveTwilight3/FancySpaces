@@ -35,7 +35,7 @@ func (c *Cache) GetDownloadCountForVersion(spaceID, versionID string) (error, ui
 
 	count, found := c.versionDownloadCounts.Get(key)
 	if !found {
-		return analytics.NotInCacheErr, 0
+		return analytics.ErrNotInCache, 0
 	}
 
 	return nil, count
