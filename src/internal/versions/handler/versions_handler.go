@@ -12,6 +12,7 @@ import (
 	"github.com/OliverSchlueter/goutils/problems"
 	"github.com/OliverSchlueter/goutils/ratelimit"
 	"github.com/OliverSchlueter/goutils/sloki"
+	"github.com/fancyinnovations/fancyspaces/internal/analytics"
 	"github.com/fancyinnovations/fancyspaces/internal/auth"
 	"github.com/fancyinnovations/fancyspaces/internal/spaces"
 	"github.com/fancyinnovations/fancyspaces/internal/versions"
@@ -20,6 +21,7 @@ import (
 type Handler struct {
 	store             *versions.Store
 	spaces            *spaces.Store
+	analytics         *analytics.Store
 	userFromCtx       func(ctx context.Context) *auth.User
 	downloadRatelimit *ratelimit.Service
 }
@@ -27,6 +29,7 @@ type Handler struct {
 type Configuration struct {
 	Store       *versions.Store
 	Spaces      *spaces.Store
+	Analytics   *analytics.Store
 	UserFromCtx func(ctx context.Context) *auth.User
 }
 
@@ -39,6 +42,7 @@ func New(cfg Configuration) *Handler {
 	return &Handler{
 		store:             cfg.Store,
 		spaces:            cfg.Spaces,
+		analytics:         cfg.Analytics,
 		userFromCtx:       cfg.UserFromCtx,
 		downloadRatelimit: downloadRatelimit,
 	}
@@ -47,6 +51,7 @@ func New(cfg Configuration) *Handler {
 func (h *Handler) Register(prefix string, mux *http.ServeMux) {
 	mux.HandleFunc(prefix+"/spaces/{space_id}/versions", h.handleVersions)
 	mux.HandleFunc(prefix+"/spaces/{space_id}/versions/{version_id}", h.handleVersion)
+	mux.HandleFunc(prefix+"/spaces/{space_id}/versions/{version_id}/downloads", h.handleVersionDownloads)
 	mux.HandleFunc(prefix+"/spaces/{space_id}/versions/{version_id}/files/{file_name}", h.handleVersionFile)
 }
 
@@ -263,4 +268,59 @@ func (h *Handler) handleDeleteVersion(w http.ResponseWriter, r *http.Request, sp
 	}
 
 	w.WriteHeader(http.StatusNoContent)
+}
+
+// no auth required
+func (h *Handler) handleVersionDownloads(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodGet {
+		problems.MethodNotAllowed(r.Method, []string{http.MethodGet}).WriteToHTTP(w)
+		return
+	}
+
+	sid := r.PathValue("space_id")
+	if sid == "" {
+		problems.ValidationError("space_id", "Space ID is required").WriteToHTTP(w)
+		return
+	}
+	space, err := h.spaces.Get(sid)
+	if err != nil {
+		if errors.Is(err, spaces.ErrSpaceNotFound) {
+			problems.NotFound("Space", sid).WriteToHTTP(w)
+			return
+		}
+		slog.Error("Failed to get space by id", sloki.WrapError(err))
+		problems.InternalServerError("").WriteToHTTP(w)
+		return
+	}
+
+	vid := r.PathValue("version_id")
+	if vid == "" {
+		problems.ValidationError("version_id", "Version ID is required").WriteToHTTP(w)
+		return
+	}
+	ver, err := h.store.Get(r.Context(), sid, vid)
+	if err != nil {
+		if errors.Is(err, versions.ErrVersionNotFound) {
+			problems.NotFound("Version", vid).WriteToHTTP(w)
+			return
+		}
+		slog.Error("Failed to get version by id", sloki.WrapError(err))
+		problems.InternalServerError("").WriteToHTTP(w)
+		return
+	}
+
+	count, err := h.analytics.GetDownloadCountForVersion(r.Context(), space.ID, ver.ID)
+	if err != nil {
+		slog.Error("Failed to get download count for version", sloki.WrapError(err))
+		problems.InternalServerError("").WriteToHTTP(w)
+		return
+	}
+
+	resp := VersionDownloadsResp{
+		Downloads: count,
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.Header().Set("Cache-Control", "public, 300") // 5 minutes
+	json.NewEncoder(w).Encode(resp)
 }

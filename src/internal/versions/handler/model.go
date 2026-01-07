@@ -9,3 +9,7 @@ type CreateVersionReq struct {
 	Changelog                 string            `json:"changelog"`
 	SupportedPlatformVersions []string          `json:"supported_platform_versions"`
 }
+
+type VersionDownloadsResp struct {
+	Downloads int64 `json:"downloads"`
+}
