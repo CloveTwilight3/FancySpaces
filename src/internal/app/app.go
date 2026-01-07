@@ -90,7 +90,7 @@ func seedSpacesDB() *fakeSpacesDB.DB {
 		Title:       "FancyCore",
 		Description: "Essential features every Hytale server needs.",
 		Categories:  []spaces.Category{spaces.CategoryHytalePlugin},
-		IconURL:     "",
+		IconURL:     "https://fancyinnovations.com/logos-and-banners/fancycore-logo.png",
 		Status:      spaces.StatusApproved,
 		CreatedAt:   time.Date(2025, 12, 5, 20, 0, 0, 0, time.UTC),
 		Members: []spaces.Member{
@@ -234,7 +234,7 @@ func seedSpacesDB() *fakeSpacesDB.DB {
 			spaces.CategoryMinecraftPlugin,
 			spaces.CategoryHytalePlugin,
 		},
-		IconURL:   "",
+		IconURL:   "https://fancyinnovations.com/logos-and-banners/fancyanalytics-logo.png",
 		Status:    spaces.StatusApproved,
 		CreatedAt: time.Date(2025, 12, 5, 20, 0, 0, 0, time.UTC),
 		Members: []spaces.Member{
