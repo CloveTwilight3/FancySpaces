@@ -152,6 +152,6 @@ func (h *Handler) handleDownloadVersionFile(w http.ResponseWriter, r *http.Reque
 
 	w.Header().Set("Content-Type", "application/octet-stream")
 	w.Header().Set("Content-Disposition", "attachment; filename=\""+fileName+"\"")
-	w.Header().Set("Cache-Control", "public, 86400") // 24h
+	w.Header().Set("Cache-Control", "public, max-age=86400") // 24h
 	w.Write(data)
 }

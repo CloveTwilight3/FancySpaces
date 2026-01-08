@@ -84,7 +84,7 @@ func (h *Handler) handleGetMembers(w http.ResponseWriter, r *http.Request, s *sp
 	}
 
 	w.Header().Set("Content-Type", "application/json")
-	w.Header().Set("Cache-Control", "3600") // 1 hour
+	w.Header().Set("Cache-Control", "public, max-age=3600") // 1 hour
 	json.NewEncoder(w).Encode(s.Members)
 }
 
@@ -97,7 +97,7 @@ func (h *Handler) handleGetMember(w http.ResponseWriter, r *http.Request, s *spa
 	for _, m := range s.Members {
 		if m.UserID == uid {
 			w.Header().Set("Content-Type", "application/json")
-			w.Header().Set("Cache-Control", "3600") // 1 hour
+			w.Header().Set("Cache-Control", "public, max-age=3600") // 1 hour
 			json.NewEncoder(w).Encode(m)
 			return
 		}

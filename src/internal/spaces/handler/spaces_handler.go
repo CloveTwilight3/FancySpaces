@@ -118,7 +118,7 @@ func (h *Handler) handleGetSpaces(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.Header().Set("Content-Type", "application/json")
-	w.Header().Set("Cache-Control", "3600") // 1 hour
+	w.Header().Set("Cache-Control", "public, max-age=3600") // 1 hour
 	json.NewEncoder(w).Encode(res)
 }
 
@@ -150,7 +150,7 @@ func (h *Handler) handleGetSpace(w http.ResponseWriter, r *http.Request, s *spac
 	}
 
 	w.Header().Set("Content-Type", "application/json")
-	w.Header().Set("Cache-Control", "3600")
+	w.Header().Set("Cache-Control", "public, max-age=3600")
 	json.NewEncoder(w).Encode(s)
 }
 
@@ -382,6 +382,6 @@ func (h *Handler) handleDownloads(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.Header().Set("Content-Type", "application/json")
-	w.Header().Set("Cache-Control", "public, 60") // 1 minute
+	w.Header().Set("Cache-Control", "public, max-age=60") // 1 minute
 	json.NewEncoder(w).Encode(resp)
 }

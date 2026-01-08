@@ -143,7 +143,7 @@ func (h *Handler) handleGetVersions(w http.ResponseWriter, r *http.Request, spac
 	}
 
 	w.Header().Set("Content-Type", "application/json")
-	w.Header().Set("Cache-Control", "public, 3600")
+	w.Header().Set("Cache-Control", "public, max-age=3600")
 	json.NewEncoder(w).Encode(all)
 }
 
@@ -166,7 +166,7 @@ func (h *Handler) handleGetVersion(w http.ResponseWriter, r *http.Request, space
 		}
 
 		w.Header().Set("Content-Type", "application/json")
-		w.Header().Set("Cache-Control", "public, 60") // 1 minute
+		w.Header().Set("Cache-Control", "public, max-age=60") // 1 minute
 		json.NewEncoder(w).Encode(ver)
 		return
 	}
@@ -179,7 +179,7 @@ func (h *Handler) handleGetVersion(w http.ResponseWriter, r *http.Request, space
 	}
 
 	w.Header().Set("Content-Type", "application/json")
-	w.Header().Set("Cache-Control", "public, 3600") // 1 hour
+	w.Header().Set("Cache-Control", "public, max-age=3600") // 1 hour
 	json.NewEncoder(w).Encode(ver)
 }
 
@@ -321,6 +321,6 @@ func (h *Handler) handleVersionDownloads(w http.ResponseWriter, r *http.Request)
 	}
 
 	w.Header().Set("Content-Type", "application/json")
-	w.Header().Set("Cache-Control", "public, 60") // 1 minute
+	w.Header().Set("Cache-Control", "public, max-age=60") // 1 minute
 	json.NewEncoder(w).Encode(resp)
 }
