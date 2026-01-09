@@ -6,7 +6,6 @@ import {mapPlatformToDisplayname, type SpaceVersion} from "@/api/versions/types.
 import {getLatestVersion, getVersion} from "@/api/versions/versions.ts";
 import SpaceSidebar from "@/components/SpaceSidebar.vue";
 import SpaceHeader from "@/components/SpaceHeader.vue";
-import MarkdownRenderer from "@/components/MarkdownRenderer.vue";
 
 const route = useRoute();
 
