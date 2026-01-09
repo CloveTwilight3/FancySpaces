@@ -25,9 +25,24 @@ type VersionFile struct {
 type Platform string
 
 const (
-	PlatformMinecraftPlugin Platform = "minecraft_plugin"
-	PlatformHytalePlugin    Platform = "hytale_plugin"
-	PlatformExecutable      Platform = "executable"
+	PlatformBukkit Platform = "bukkit"
+	PlatformSpigot Platform = "spigot"
+	PlatformPaper  Platform = "paper"
+	PlatformPurpur Platform = "purpur"
+	PlatformFolia  Platform = "folia"
+
+	PlatformBungeecord Platform = "bungeecord"
+	PlatformWaterfall  Platform = "waterfall"
+	PlatformVelocity   Platform = "velocity"
+
+	PlatformFabric     Platform = "fabric"
+	PlatformForge      Platform = "forge"
+	PlatformQuilt      Platform = "quilt"
+	PlatformLiteloader Platform = "liteloader"
+
+	PlatformHytalePlugin Platform = "hytale_plugin"
+
+	PlatformExecutable Platform = "executable"
 )
 
 type Channel string
