@@ -8,7 +8,9 @@ const spaces = ref<Space[]>();
 
 onMounted(async () => {
   spaces.value = [];
+  spaces.value.push(await getSpace("fn"));
   spaces.value.push(await getSpace("fc"));
+  spaces.value.push(await getSpace("fh"));
   spaces.value.push(await getSpace("fa"));
 });
 </script>
