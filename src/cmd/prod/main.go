@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"log/slog"
 	"net/http"
@@ -18,7 +19,7 @@ import (
 )
 
 const (
-	apiKeyEnv = "API_KEY"
+	usersPathEnv = "USERS_PATH"
 
 	mongodbUrlEnv = "MONGODB_URL"
 
@@ -58,6 +59,9 @@ func main() {
 		env.MustGetStr(minioSecretKeyEnv),
 	)
 
+	// Load users
+	loadUsers()
+
 	// Setup HTTP server
 	mux := http.NewServeMux()
 	port := "8080"
@@ -68,9 +72,6 @@ func main() {
 		ClickHouse: ch,
 		MinIO:      mio,
 	})
-
-	auth.ApiKey = env.MustGetStr(apiKeyEnv)
-	auth.UserAdmin.Password = auth.Hash(auth.ApiKey)
 
 	go func() {
 		//rl := ratelimit.NewService(ratelimit.Configuration{
@@ -107,5 +108,27 @@ func main() {
 		containers.DisconnectMinIO(mio)
 
 		slog.Info("Shutdown complete")
+	}
+}
+
+func loadUsers() {
+	usersFilePath := env.MustGetStr(usersPathEnv)
+
+	data, err := os.ReadFile(usersFilePath)
+	if err != nil {
+		slog.Error("Could not read users file", sloki.WrapError(err))
+		os.Exit(1)
+		return
+	}
+
+	var users []auth.User
+	if err := json.Unmarshal(data, &users); err != nil {
+		slog.Error("Could not parse users file", sloki.WrapError(err))
+		os.Exit(1)
+		return
+	}
+
+	for _, user := range users {
+		auth.Users[user.ID] = &user
 	}
 }
