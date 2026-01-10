@@ -69,6 +69,14 @@
             to="/explore/other-projects"
           />
 
+          <v-list-item
+            class="mb-2"
+            prepend-icon="mdi-account-group-outline"
+            rounded="xl"
+            title="By other creators"
+            to="/explore/by-other-creators"
+          />
+
         </v-list>
       </v-menu>
 

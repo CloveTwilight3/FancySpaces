@@ -5,41 +5,30 @@ import (
 	"crypto/sha256"
 	"fmt"
 	"net/http"
-	"time"
 )
-
-var ApiKey string
 
 type contextKey string
 
 const userContextKey contextKey = "user"
 
-var UserAdmin = User{
-	ID:        "admin-1",
-	Provider:  ProviderBasic,
-	Name:      "Admin",
-	Email:     "admin@fancyspaces.net",
-	Verified:  true,
-	Password:  "something",
-	Roles:     []string{"admin", "user"},
-	CreatedAt: time.Date(2025, 12, 3, 19, 0, 0, 0, time.UTC),
-	IsActive:  true,
-	Metadata:  map[string]string{},
-}
-
-var Users = map[string]*User{
-	UserAdmin.ID: &UserAdmin,
-}
+var Users = map[string]*User{}
 
 func Middleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 
 		// API key
 		apiKey := r.Header.Get("Authorization")
-		if apiKey == ApiKey {
-			newCtx := context.WithValue(r.Context(), userContextKey, &UserAdmin)
-			next.ServeHTTP(w, r.WithContext(newCtx))
-			return
+		for _, u := range Users {
+			userKey, ok := u.Metadata["api_key"]
+			if !ok {
+				continue
+			}
+
+			if apiKey == userKey {
+				newCtx := context.WithValue(r.Context(), userContextKey, u)
+				next.ServeHTTP(w, r.WithContext(newCtx))
+				return
+			}
 		}
 
 		// Basic Auth
@@ -48,6 +37,7 @@ func Middleware(next http.Handler) http.Handler {
 			next.ServeHTTP(w, r)
 			return
 		}
+
 		u, found := Users[username]
 		if !found || u.Password != Hash(password) {
 			next.ServeHTTP(w, r)

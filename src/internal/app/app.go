@@ -12,7 +12,9 @@ import (
 	analyticsCache "github.com/fancyinnovations/fancyspaces/internal/analytics/cache"
 	analyticsDatabase "github.com/fancyinnovations/fancyspaces/internal/analytics/database/clickhouse"
 	"github.com/fancyinnovations/fancyspaces/internal/auth"
+	"github.com/fancyinnovations/fancyspaces/internal/badges/handler"
 	"github.com/fancyinnovations/fancyspaces/internal/frontend"
+	"github.com/fancyinnovations/fancyspaces/internal/sitemap"
 	"github.com/fancyinnovations/fancyspaces/internal/spaces"
 	fakeSpacesDB "github.com/fancyinnovations/fancyspaces/internal/spaces/database/fake"
 	spacesHandler "github.com/fancyinnovations/fancyspaces/internal/spaces/handler"
@@ -88,6 +90,20 @@ func Start(cfg Configuration) {
 		Files: frontend.Files,
 	})
 	fh.Register(cfg.Mux)
+
+	// Sitemap
+	sm := sitemap.NewHandler(sitemap.Configuration{
+		Spaces: spacesStore,
+	})
+	sm.Register(cfg.Mux)
+
+	// Badges
+	bh := handler.NewHandler(handler.Configuration{
+		Spaces:    spacesStore,
+		Versions:  versionsStore,
+		Analytics: as,
+	})
+	bh.Register(apiPrefix, cfg.Mux)
 }
 
 func seedSpacesDB() *fakeSpacesDB.DB {
@@ -110,7 +126,7 @@ func seedSpacesDB() *fakeSpacesDB.DB {
 		CreatedAt: time.Date(2022, 12, 19, 20, 0, 0, 0, time.UTC),
 		Members: []spaces.Member{
 			{
-				UserID: "admin-1",
+				UserID: "oliver",
 				Role:   spaces.RoleOwner,
 			},
 		},
@@ -136,7 +152,7 @@ func seedSpacesDB() *fakeSpacesDB.DB {
 		CreatedAt: time.Date(2023, 2, 18, 20, 0, 0, 0, time.UTC),
 		Members: []spaces.Member{
 			{
-				UserID: "admin-1",
+				UserID: "oliver",
 				Role:   spaces.RoleOwner,
 			},
 		},
@@ -162,7 +178,7 @@ func seedSpacesDB() *fakeSpacesDB.DB {
 		CreatedAt: time.Date(2023, 2, 18, 20, 0, 0, 0, time.UTC),
 		Members: []spaces.Member{
 			{
-				UserID: "admin-1",
+				UserID: "oliver",
 				Role:   spaces.RoleOwner,
 			},
 		},
@@ -188,7 +204,7 @@ func seedSpacesDB() *fakeSpacesDB.DB {
 		CreatedAt: time.Date(2025, 11, 20, 20, 0, 0, 0, time.UTC),
 		Members: []spaces.Member{
 			{
-				UserID: "admin-1",
+				UserID: "oliver",
 				Role:   spaces.RoleOwner,
 			},
 		},
@@ -208,7 +224,7 @@ func seedSpacesDB() *fakeSpacesDB.DB {
 		CreatedAt:  time.Date(2025, 12, 5, 20, 0, 0, 0, time.UTC),
 		Members: []spaces.Member{
 			{
-				UserID: "admin-1",
+				UserID: "oliver",
 				Role:   spaces.RoleOwner,
 			},
 		},
@@ -228,7 +244,7 @@ func seedSpacesDB() *fakeSpacesDB.DB {
 		CreatedAt:  time.Date(2025, 12, 5, 20, 0, 0, 0, time.UTC),
 		Members: []spaces.Member{
 			{
-				UserID: "admin-1",
+				UserID: "oliver",
 				Role:   spaces.RoleOwner,
 			},
 		},
@@ -248,7 +264,7 @@ func seedSpacesDB() *fakeSpacesDB.DB {
 		CreatedAt:  time.Date(2025, 12, 5, 20, 0, 0, 0, time.UTC),
 		Members: []spaces.Member{
 			{
-				UserID: "admin-1",
+				UserID: "oliver",
 				Role:   spaces.RoleOwner,
 			},
 		},
@@ -268,7 +284,7 @@ func seedSpacesDB() *fakeSpacesDB.DB {
 		CreatedAt:  time.Date(2025, 12, 5, 20, 0, 0, 0, time.UTC),
 		Members: []spaces.Member{
 			{
-				UserID: "admin-1",
+				UserID: "oliver",
 				Role:   spaces.RoleOwner,
 			},
 		},
@@ -288,7 +304,7 @@ func seedSpacesDB() *fakeSpacesDB.DB {
 		CreatedAt:  time.Date(2025, 12, 5, 20, 0, 0, 0, time.UTC),
 		Members: []spaces.Member{
 			{
-				UserID: "admin-1",
+				UserID: "oliver",
 				Role:   spaces.RoleOwner,
 			},
 		},
@@ -308,7 +324,7 @@ func seedSpacesDB() *fakeSpacesDB.DB {
 		CreatedAt:  time.Date(2025, 12, 5, 20, 0, 0, 0, time.UTC),
 		Members: []spaces.Member{
 			{
-				UserID: "admin-1",
+				UserID: "oliver",
 				Role:   spaces.RoleOwner,
 			},
 		},
@@ -335,7 +351,7 @@ func seedSpacesDB() *fakeSpacesDB.DB {
 		CreatedAt: time.Date(2024, 1, 25, 20, 0, 0, 0, time.UTC),
 		Members: []spaces.Member{
 			{
-				UserID: "admin-1",
+				UserID: "oliver",
 				Role:   spaces.RoleOwner,
 			},
 		},
@@ -360,7 +376,7 @@ func seedSpacesDB() *fakeSpacesDB.DB {
 		CreatedAt: time.Date(2025, 12, 2, 20, 0, 0, 0, time.UTC),
 		Members: []spaces.Member{
 			{
-				UserID: "admin-1",
+				UserID: "oliver",
 				Role:   spaces.RoleOwner,
 			},
 		},

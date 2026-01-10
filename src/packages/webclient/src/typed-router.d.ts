@@ -20,6 +20,7 @@ declare module 'vue-router/auto-routes' {
   export interface RouteNamedMap {
     '/': RouteRecordInfo<'/', '/', Record<never, never>, Record<never, never>>,
     '/explore/': RouteRecordInfo<'/explore/', '/explore', Record<never, never>, Record<never, never>>,
+    '/explore/by-other-creators': RouteRecordInfo<'/explore/by-other-creators', '/explore/by-other-creators', Record<never, never>, Record<never, never>>,
     '/explore/hytale-plugins': RouteRecordInfo<'/explore/hytale-plugins', '/explore/hytale-plugins', Record<never, never>, Record<never, never>>,
     '/explore/minecraft-plugins': RouteRecordInfo<'/explore/minecraft-plugins', '/explore/minecraft-plugins', Record<never, never>, Record<never, never>>,
     '/explore/other-projects': RouteRecordInfo<'/explore/other-projects', '/explore/other-projects', Record<never, never>, Record<never, never>>,
@@ -45,6 +46,10 @@ declare module 'vue-router/auto-routes' {
     }
     'src/pages/explore/index.vue': {
       routes: '/explore/'
+      views: never
+    }
+    'src/pages/explore/by-other-creators.vue': {
+      routes: '/explore/by-other-creators'
       views: never
     }
     'src/pages/explore/hytale-plugins.vue': {

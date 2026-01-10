@@ -7,6 +7,7 @@ import (
 	"os"
 	"os/signal"
 	"syscall"
+	"time"
 
 	"github.com/OliverSchlueter/goutils/containers"
 	"github.com/OliverSchlueter/goutils/middleware"
@@ -33,6 +34,22 @@ func main() {
 	ch := containers.ConnectToClickhouseE2E("fancyspaces_e2e")
 	mio := containers.ConnectToMinIOE2E()
 
+	// Setup default admin user
+	auth.Users["admin-1"] = &auth.User{
+		ID:        "admin-1",
+		Provider:  auth.ProviderBasic,
+		Name:      "Admin",
+		Email:     "oliver@fancyinnovations.com",
+		Verified:  true,
+		Password:  auth.Hash("hello"),
+		Roles:     []string{"admin", "user"},
+		CreatedAt: time.Date(2025, 12, 3, 19, 0, 0, 0, time.UTC),
+		IsActive:  true,
+		Metadata: map[string]string{
+			"api_key": "hello",
+		},
+	}
+
 	// Setup HTTP server
 	mux := http.NewServeMux()
 	port := "8080"
@@ -43,9 +60,6 @@ func main() {
 		ClickHouse: ch,
 		MinIO:      mio,
 	})
-
-	auth.ApiKey = "hello"
-	auth.UserAdmin.Password = auth.Hash(auth.ApiKey)
 
 	go func() {
 		chain := alice.New(

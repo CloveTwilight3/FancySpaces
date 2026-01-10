@@ -3,6 +3,18 @@
 import AppHeader from "@/components/AppHeader.vue";
 import type {Space} from "@/api/spaces/types.ts";
 import {getSpace} from "@/api/spaces/spaces.ts";
+import {useHead} from "@vueuse/head";
+
+
+useHead({
+  title: 'Explore Spaces - FancySpaces',
+  meta: [
+    {
+      name: 'description',
+      content: 'Discover and explore a variety of project spaces on FancySpaces, your hub for innovative creations.'
+    }
+  ]
+});
 
 const spaces = ref<Space[]>();
 
@@ -24,7 +36,7 @@ onMounted(async () => {
   <v-container
     width="40%"
   >
-    <v-row class="mt-16 mb-8" justify="center">
+    <v-row class="my-4" justify="center">
       <v-col>
         <h1 class="text-h3 text-center">All projects</h1>
       </v-col>
