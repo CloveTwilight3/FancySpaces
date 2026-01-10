@@ -30,7 +30,7 @@ onMounted(async () => {
   <v-container
     width="40%"
   >
-    <v-row class="mt-16 mb-8" justify="center">
+    <v-row class="my-4" justify="center">
       <v-col>
         <h1 class="text-h3 text-center">Hytale plugins</h1>
       </v-col>

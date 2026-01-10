@@ -8,6 +8,7 @@ import {getDownloadCountForSpace} from "@/api/spaces/spaces.ts";
 const props = defineProps<{
   space?: Space
   withBadge?: boolean
+  withAuthor?: boolean
 }>();
 
 const latestVersion = ref<SpaceVersion>();
@@ -69,6 +70,7 @@ onMounted(async () => {
           </div>
 
           <div class="d-flex justify-space-between mt-2 text-grey-lighten-1">
+            <p v-if="withAuthor" class="text-body-2">By {{ space?.members[0]?.user_id }}</p>
             <p class="text-body-2">Created {{ space?.created_at.toLocaleDateString() }}</p>
             <p class="text-body-2">Updated {{ latestVersion?.published_at.toLocaleDateString() || space?.created_at.toLocaleDateString() }}</p>
             <p class="text-body-2">{{ downloadCount }} downloads</p>

@@ -85,6 +85,11 @@ func (h *Handler) handle(w http.ResponseWriter, r *http.Request) {
 			ChangeFreq: "daily",
 			Priority:   "0.9",
 		},
+		Url{
+			Loc:        baseURL + "/explore/by-other-creators",
+			ChangeFreq: "daily",
+			Priority:   "0.9",
+		},
 	)
 
 	for _, s := range filteredSpaces {

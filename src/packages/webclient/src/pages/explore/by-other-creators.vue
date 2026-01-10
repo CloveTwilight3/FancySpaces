@@ -6,11 +6,11 @@ import {getSpace} from "@/api/spaces/spaces.ts";
 import {useHead} from "@vueuse/head";
 
 useHead({
-  title: 'Explore Minecraft Plugins - FancySpaces',
+  title: 'Explore Projects by Other Creators - FancySpaces',
   meta: [
     {
       name: 'description',
-      content: 'Discover and explore Minecraft plugin project spaces on FancySpaces, your hub for innovative Minecraft creations.'
+      content: 'Discover and explore projects created by other talented creators on FancySpaces.'
     }
   ]
 });
@@ -19,10 +19,9 @@ const spaces = ref<Space[]>();
 
 onMounted(async () => {
   spaces.value = [];
-  spaces.value.push(await getSpace("fn"));
-  spaces.value.push(await getSpace("fh"));
-  spaces.value.push(await getSpace("fd"));
+  spaces.value.push(await getSpace("cpp"));
 });
+
 </script>
 
 <template>
@@ -33,7 +32,7 @@ onMounted(async () => {
   >
     <v-row class="my-4" justify="center">
       <v-col>
-        <h1 class="text-h3 text-center">Minecraft plugins</h1>
+        <h1 class="text-h3 text-center">Projects by other creators</h1>
       </v-col>
     </v-row>
 
@@ -41,6 +40,8 @@ onMounted(async () => {
       <v-col v-for="space in spaces" :key="space.id" class="mb-4" md="12">
         <SpaceCard
           :space="space"
+          with-author
+          with-badge
         />
       </v-col>
     </v-row>

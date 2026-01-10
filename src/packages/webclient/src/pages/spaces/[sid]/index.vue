@@ -98,7 +98,7 @@ onMounted(async () => {
           <v-card-title class="mt-2">Categories</v-card-title>
 
           <v-card-text>
-            <div v-for="category in space?.categories" :key="category">
+            <div v-for="category in space?.categories" :key="category" class="d-inline-block">
               <v-chip
                 class="ma-1"
                 color="tertiary"
